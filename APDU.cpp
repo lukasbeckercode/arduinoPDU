@@ -1,4 +1,4 @@
-#include "apdu.h"
+#include "APDU.h"
 
 /**
  * Global vars needed
@@ -17,13 +17,14 @@ String data  = ""; // some data
 /**
  * default constructor
  */
-apdu::apdu(){
+APDU::APDU() {
+
 }
 
 /**
  * Start a new Serial tx,
  */
-void apdu::begin(){
+void APDU::begin(){
     Serial.begin(9600);
 }
 
@@ -31,14 +32,14 @@ void apdu::begin(){
  * Starts a new Serial TX
  * @param baud_rate baud rate used for Serial TX
  */
-void apdu::begin(int baud_rate){
+void APDU::begin(int baud_rate){
     Serial.begin(baud_rate);
 }
 
 /**
  * Test method for debugging
  */
-void apdu::writeMSG()
+void APDU::writeMSG()
 {
     Serial.println("Hello");
 }
@@ -47,7 +48,7 @@ void apdu::writeMSG()
  * parses the apdu, then runs the command behind it
  * @returns true, if the received command is a custom one, false if it is an internal apdu
  */
-bool apdu::validateCAPDU()
+bool APDU::validateCAPDU()
 {
     if(capdu.length() % 2 !=0 || capdu.length() < 4) //apdus must have even length
     {
@@ -114,7 +115,7 @@ bool apdu::validateCAPDU()
 /**
  * Runs a command based on the clains
  */
-void apdu::runCommand()
+void APDU::runCommand()
 {
     //safety check on cla and ins pair
     if(clains.length() != 4)
@@ -220,7 +221,7 @@ void apdu::runCommand()
  * makes the arduino listen to serial tx's coming in and use them as apdus
  * makes sure it gets the whole capdu
  */
-bool apdu::listen()
+bool APDU::listen()
 {
     int serAV  = Serial.available(); //see how much data is incoming
     if(serAV != 0) //if there is data coming
@@ -239,7 +240,7 @@ bool apdu::listen()
 
     if(capdu.length()!=0)
     {
-        return apdu::validateCAPDU(); //if a new capdu was sent, validate and parse it
+        return APDU::validateCAPDU(); //if a new capdu was sent, validate and parse it
     }
     return false;
 }
@@ -247,7 +248,7 @@ bool apdu::listen()
 /**
  * resets all public fields to not have data lingering around
  */
-void apdu::reset()
+void APDU::reset()
 {
     //reset all the fields
     capdu = "";
@@ -257,7 +258,7 @@ void apdu::reset()
     data = "";
 }
 
-void apdu::getCAPDU(String *instruction, int *param, int *lenc, String *cdata )
+void APDU::getCAPDU(String *instruction, int *param, int *lenc, String *cdata )
 {
    *instruction = clains;
    *param = p1p2;
@@ -272,7 +273,7 @@ void apdu::getCAPDU(String *instruction, int *param, int *lenc, String *cdata )
  * @param pin which pin to check
  * @return true, if the pin can be assigned to a new pinMode, false if it already has a designated pinMode
  */
-bool apdu::checkPinAvailable(int pin)
+bool APDU::checkPinAvailable(int pin)
 {
     return (( bitRead(input_pins,pin) == 0) && (bitRead(output_pins,pin) == 0));
 }
@@ -283,7 +284,7 @@ bool apdu::checkPinAvailable(int pin)
  * @param pin which pin should be checked
  * @return true, if the pin is in the expected pinMde according to the in param
  */
-bool apdu::checkPinStatus(bool in, int pin)
+bool APDU::checkPinStatus(bool in, int pin)
 {
 
     return in ? ( bitRead(input_pins,pin) == 1) : (bitRead(output_pins,pin) == 1);
@@ -292,7 +293,7 @@ bool apdu::checkPinStatus(bool in, int pin)
 /**
  * checks, which pin is an output, sets the output pins to LOW, then resets the pin status bitmask
  */
-void apdu::resetPinStatus()
+void APDU::resetPinStatus()
 {
     for (int i = 0; i<NUMBER_OF_PINS;i++)
     {
@@ -305,7 +306,7 @@ void apdu::resetPinStatus()
     output_pins = 0;
 }
 
-void apdu::resetPinStatus(int pin)
+void APDU::resetPinStatus(int pin)
 {
     if(bitRead(output_pins,pin)==1)
     {

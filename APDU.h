@@ -6,7 +6,7 @@
     #include "WProgramm.h"
 #endif
 
-class apdu {
+class APDU {
 public:
     /**
      * CONSTANTS
@@ -16,7 +16,7 @@ public:
     /**
      * Constructor
      */
-    apdu();
+    APDU();
 
     /**
      * Methods
