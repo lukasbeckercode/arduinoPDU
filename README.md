@@ -5,16 +5,16 @@ on the APDU protocol used in smart cards.
 ### Storing and reading data 
 The library provides a String array called records. You can store and read data here either using the according 
 commands, or do it directly in your arduino sketch! 
-###Better pin control
+### Better pin control
 Internal checks keep track of the pinModes set to each pin and strictly enforces these pinModes. 
 This means that a pin set to _INPUT_ cannot be set to _HIGH_ or _LOW_ by this library. 
 The arduino allows the change of the pinMode and this library does as well, however the pin has to be specifically reset 
 and set to a new pinMode to avoid mistakes in this matter
-###Customisation 
+### Customisation 
 Commands 9000 to 9999 are custom commands, so their handling can easily be implemented by anyone with a little experience 
 in arduino development. Just take a quick look at the example.ino sketch. <br />
 Although pointers are used to retrieve all the parts of the command, there is no need for a user of this library to 
-understand pointers at all. Just put the "&" sings exactly where they are in the example.ino sketch 
+understand pointers at all. Just put the "&" signs exactly where they are in the example.ino sketch 
 and everything works. 
 ## Basic command Syntax 
 <b>Commands must be of even length! </b>
@@ -27,7 +27,7 @@ lc |2 | the length of the data that is sent with the command |
 data |var |any data the board might need for processing the command | 
 
 ## Valid commands & examples
-###Class 01
+### Class 01
 - 0100: Hello World
   - prints "Hello World!9000" 
   - can be used without p1p2 lc and data 
@@ -35,7 +35,8 @@ data |var |any data the board might need for processing the command |
   - echos the data field back 
   - p1p2 must be set (value is ignored) 
   - example: 010100041234 -> answer is 12349000
-###Class 02
+  
+### Class 02
 - 0200: Store data 
   - stores data in the internal records array (type String)  
   - p1p2 tells the command where in this array to store the data, maximum value by default is 49   
@@ -45,7 +46,8 @@ data |var |any data the board might need for processing the command |
   - p1p2 tells the command which record to return 
   - lc and data are ignored 
   - example: 020101 -> returns record 1, if previous command was run "12349000"  
-###Class 03
+  
+### Class 03
 - 0300: Set to _LOW_ 
   - sets the pin specified in p1p2 to _LOW_
   - requires the pinMode to be set to _OUTPUT_ (see below: 0311)
@@ -69,7 +71,7 @@ data |var |any data the board might need for processing the command |
   - sets all _OUTPUT_ pins to _LOW_ 
   - allows all pinModes to be reset
 
-###Class 9X 
+### Class 9X 
 This command class can be personalized in the arduino sketch by the user. This comes in handy if you need 
 functionality that isn't (yet) covered by this library. An example of how this can be used can be found
 in the example.ino sketch. <br />
@@ -89,7 +91,7 @@ Status words can be compared to the HTTP Response Codes. <br />
 |6985 | pinMode already set |
 |6986 | pin unavailable|
 
-##Troubleshooting 
+## Troubleshooting 
 ### I sent a command, and I get 6700 as a response, then nothing happens
 This most likely means that the length of your command was not even. For parsing purposes, 
 only commands with even lengths are permitted. <br /> 
