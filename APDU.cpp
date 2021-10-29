@@ -172,6 +172,19 @@ void APDU::runCommand()
             Serial.println("6986"); //pin not available
         }
     }
+    else if (clains == "0302") //digitalRead
+    {
+        if(checkPinStatus(true,p1p2))
+        {
+            int in = digitalRead(p1p2);
+            Serial.print(in);
+            Serial.println("9000");
+        }
+        else
+        {
+            Serial.println("6986"); //pin not available
+        }
+    }
     else if (clains =="0310") //set p1p2 to input
     {
         int pin = 0;
@@ -306,6 +319,10 @@ void APDU::resetPinStatus()
     output_pins = 0;
 }
 
+/**
+ * allows a single pin to be reset
+ * @param pin the pin to be reset
+ */
 void APDU::resetPinStatus(int pin)
 {
     if(bitRead(output_pins,pin)==1)
@@ -314,6 +331,7 @@ void APDU::resetPinStatus(int pin)
     }
     else if (bitRead(input_pins,pin) == 1)
     {
+        digitalWrite(pin,0); //make sure the pin is turned off
         bitWrite(input_pins,pin,0);
     }
 }
