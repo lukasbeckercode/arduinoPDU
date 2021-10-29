@@ -49,7 +49,7 @@ void apdu::writeMSG()
  */
 bool apdu::validateCAPDU()
 {
-    if(capdu.length() % 2 !=0) //apdus must have even length
+    if(capdu.length() % 2 !=0 || capdu.length() < 4) //apdus must have even length
     {
         reset();
         Serial.println("6700");
@@ -96,8 +96,14 @@ bool apdu::validateCAPDU()
     Serial.flush();
     /**____________________Command running___________________**/
     if (clains.charAt(0) == '9') //9000-9999 are custom commands, so return true
-    {
-        return true;
+    {    //safety check on cla and ins pair
+        if(clains.length() != 4)
+        {
+            reset();
+            Serial.println("6700");
+            return false;
+        }
+            return true;
     }
     runCommand();
     reset();
@@ -198,10 +204,12 @@ void apdu::runCommand()
     else if (clains=="0399") //turns off all pins, lets the pinMode be reset
     {
         resetPinStatus();
+        Serial.println("9000");
     }
     else if (clains=="0390") //turns off p1p2 and lets it's pinMode be reset
     {
-
+        resetPinStatus(p1p2);
+        Serial.println("9000");
     }
     else
     {
@@ -295,4 +303,16 @@ void apdu::resetPinStatus()
     }
     input_pins = 0;
     output_pins = 0;
+}
+
+void apdu::resetPinStatus(int pin)
+{
+    if(bitRead(output_pins,pin)==1)
+    {
+        bitWrite(output_pins,pin,0);
+    }
+    else if (bitRead(input_pins,pin) == 1)
+    {
+        bitWrite(input_pins,pin,0);
+    }
 }

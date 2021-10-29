@@ -32,5 +32,6 @@ public:
     bool checkPinAvailable(int);
     bool checkPinStatus(bool,int);
     void resetPinStatus();
+    void resetPinStatus(int);
 };
 #endif //APDU_LIBRARY_H

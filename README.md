@@ -62,6 +62,9 @@ data |var |any data the board might need for processing the command |
   - sets the pinMode of p1p2 to _OUTPUT_, meaning that you can read the pin's value
   - necessary for e.g. 0300 and 0301 commands 
   - example: 031013 -> pinMode of pin 13 is now _OUTPUT_, returns "9000" upon success
+- 0390: reset pinMode
+  - allows the pinMode of p1p2 to be reset
+  - example: pin 13 is _OUTPUT_: 039013 -> returns "9000", pinMode of 13 can now be set again
 - 0399: reset pinModes
   - sets all _OUTPUT_ pins to _LOW_ 
   - allows all pinModes to be reset
