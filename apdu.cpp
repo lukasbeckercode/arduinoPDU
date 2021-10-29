@@ -10,11 +10,6 @@ int lc = 0; //length of data that is following
 String data  = ""; // some data
 
 /**
- * Constants
- */
-
-int NUMBER_OF_PINS = 14;
-/**
  * Bitmasks for in and output pins
  */
  int input_pins = 0;
@@ -33,6 +28,14 @@ void apdu::begin(){
 }
 
 /**
+ * Starts a new Serial TX
+ * @param baud_rate baud rate used for Serial TX
+ */
+void apdu::begin(int baud_rate){
+    Serial.begin(baud_rate);
+}
+
+/**
  * Test method for debugging
  */
 void apdu::writeMSG()
@@ -42,6 +45,7 @@ void apdu::writeMSG()
 
 /**
  * parses the apdu, then runs the command behind it
+ * @returns true, if the received command is a custom one, false if it is an internal apdu
  */
 bool apdu::validateCAPDU()
 {
@@ -91,7 +95,7 @@ bool apdu::validateCAPDU()
 
     Serial.flush();
     /**____________________Command running___________________**/
-    if (clains.charAt(0) == '9')
+    if (clains.charAt(0) == '9') //9000-9999 are custom commands, so return true
     {
         return true;
     }
@@ -101,6 +105,9 @@ bool apdu::validateCAPDU()
 
 }
 
+/**
+ * Runs a command based on the clains
+ */
 void apdu::runCommand()
 {
     //safety check on cla and ins pair
@@ -155,7 +162,7 @@ void apdu::runCommand()
         }
         else
         {
-            Serial.println("6986");
+            Serial.println("6986"); //pin not available
         }
     }
     else if (clains =="0310") //set p1p2 to input
@@ -170,7 +177,7 @@ void apdu::runCommand()
         }
         else
         {
-            Serial.println("6985");
+            Serial.println("6985"); //pinMode already set
         }
     }
     else if (clains == "0311") //set p1p2 to output
@@ -188,13 +195,17 @@ void apdu::runCommand()
             Serial.println("6985");
         }
     }
-    else if (clains=="0399") //turns off all pins, resets the pinMode of all of them
+    else if (clains=="0399") //turns off all pins, lets the pinMode be reset
     {
         resetPinStatus();
     }
+    else if (clains=="0390") //turns off p1p2 and lets it's pinMode be reset
+    {
+
+    }
     else
     {
-        Serial.println("6800");
+        Serial.println("6800"); //unknown command
     }
 }
 /**
@@ -225,6 +236,9 @@ bool apdu::listen()
     return false;
 }
 
+/**
+ * resets all public fields to not have data lingering around
+ */
 void apdu::reset()
 {
     //reset all the fields
@@ -245,17 +259,31 @@ void apdu::getCAPDU(String *instruction, int *param, int *lenc, String *cdata )
     reset();
 }
 
+/**
+ * checks if a pin is already set to a pinMode
+ * @param pin which pin to check
+ * @return true, if the pin can be assigned to a new pinMode, false if it already has a designated pinMode
+ */
 bool apdu::checkPinAvailable(int pin)
 {
     return (( bitRead(input_pins,pin) == 0) && (bitRead(output_pins,pin) == 0));
 }
 
+/**
+ * checks if a pin is in the desired pinMode
+ * @param in true if a pin is supposed to be an input, false if it is supposed to be an output pin
+ * @param pin which pin should be checked
+ * @return true, if the pin is in the expected pinMde according to the in param
+ */
 bool apdu::checkPinStatus(bool in, int pin)
 {
 
     return in ? ( bitRead(input_pins,pin) == 1) : (bitRead(output_pins,pin) == 1);
 }
 
+/**
+ * checks, which pin is an output, sets the output pins to LOW, then resets the pin status bitmask
+ */
 void apdu::resetPinStatus()
 {
     for (int i = 0; i<NUMBER_OF_PINS;i++)

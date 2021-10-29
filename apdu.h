@@ -8,8 +8,21 @@
 
 class apdu {
 public:
+    /**
+     * CONSTANTS
+     */
+    int NUMBER_OF_PINS = 14;
+    String records[50];
+    /**
+     * Constructor
+     */
     apdu();
+
+    /**
+     * Methods
+     */
     void begin();
+    void begin(int);
     bool validateCAPDU();
     void writeMSG();
     bool listen();
@@ -19,6 +32,5 @@ public:
     bool checkPinAvailable(int);
     bool checkPinStatus(bool,int);
     void resetPinStatus();
-    String records[50];
 };
 #endif //APDU_LIBRARY_H
