@@ -10,9 +10,15 @@ class apdu {
 public:
     apdu();
     void begin();
-    void validateCAPDU();
+    bool validateCAPDU();
     void writeMSG();
-    void listen();
+    bool listen();
+    void reset();
+    void getCAPDU(String*, int*, int*, String*);
+    void runCommand();
+    bool checkPinAvailable(int);
+    bool checkPinStatus(bool,int);
+    void resetPinStatus();
     String records[50];
 };
 #endif //APDU_LIBRARY_H

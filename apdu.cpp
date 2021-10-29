@@ -10,6 +10,16 @@ int lc = 0; //length of data that is following
 String data  = ""; // some data
 
 /**
+ * Constants
+ */
+
+int NUMBER_OF_PINS = 14;
+/**
+ * Bitmasks for in and output pins
+ */
+ int input_pins = 0;
+ int output_pins = 0;
+/**
  * default constructor
  */
 apdu::apdu(){
@@ -33,12 +43,13 @@ void apdu::writeMSG()
 /**
  * parses the apdu, then runs the command behind it
  */
-void apdu::validateCAPDU()
+bool apdu::validateCAPDU()
 {
     if(capdu.length() % 2 !=0) //apdus must have even length
     {
+        reset();
         Serial.println("6700");
-        return;
+        return false;
     }
 
     char capdu_arr[capdu.length()]; //use this array to split the capdu into its parts
@@ -80,9 +91,22 @@ void apdu::validateCAPDU()
 
     Serial.flush();
     /**____________________Command running___________________**/
+    if (clains.charAt(0) == '9')
+    {
+        return true;
+    }
+    runCommand();
+    reset();
+    return false;
+
+}
+
+void apdu::runCommand()
+{
     //safety check on cla and ins pair
     if(clains.length() != 4)
     {
+        reset();
         Serial.println("6700");
     }
 
@@ -108,20 +132,76 @@ void apdu::validateCAPDU()
         Serial.print(print_data);
         Serial.println("9000");
     }
+    else if (clains == "0300") //set pin p1p2 to LOW
+    {
 
-    //reset all the fields
-    capdu = "";
-    clains = "";
-    p1p2 = 0;
-    lc = 0;
-    data = "";
+        if(checkPinStatus(false,p1p2))
+        {
+            digitalWrite(p1p2, 0);
+            Serial.println("9000");
+        }
+        else
+        {
+            Serial.println("6986");
+        }
+    }
+    else if (clains == "0301") //set p1p2 to HIGH
+    {
+
+        if(checkPinStatus(false,p1p2))
+        {
+            digitalWrite(p1p2, 1);
+            Serial.println("9000");
+        }
+        else
+        {
+            Serial.println("6986");
+        }
+    }
+    else if (clains =="0310") //set p1p2 to input
+    {
+        int pin = 0;
+        bitWrite(pin,p1p2,1);
+        if(checkPinAvailable(p1p2))
+        {
+            pinMode(p1p2,INPUT);
+            input_pins = (input_pins | pin);
+            Serial.println("9000");
+        }
+        else
+        {
+            Serial.println("6985");
+        }
+    }
+    else if (clains == "0311") //set p1p2 to output
+    {
+        int pin = 0;
+        bitWrite(pin,p1p2,1);
+        if(checkPinAvailable(p1p2))
+        {
+            pinMode(p1p2,OUTPUT);
+            output_pins = (output_pins | pin);
+            Serial.println("9000");
+        }
+        else
+        {
+            Serial.println("6985");
+        }
+    }
+    else if (clains=="0399") //turns off all pins, resets the pinMode of all of them
+    {
+        resetPinStatus();
+    }
+    else
+    {
+        Serial.println("6800");
+    }
 }
-
 /**
  * makes the arduino listen to serial tx's coming in and use them as apdus
  * makes sure it gets the whole capdu
  */
-void apdu::listen()
+bool apdu::listen()
 {
     int serAV  = Serial.available(); //see how much data is incoming
     if(serAV != 0) //if there is data coming
@@ -140,6 +220,51 @@ void apdu::listen()
 
     if(capdu.length()!=0)
     {
-        apdu::validateCAPDU(); //if a new capdu was sent, validate and parse it
+        return apdu::validateCAPDU(); //if a new capdu was sent, validate and parse it
     }
+    return false;
+}
+
+void apdu::reset()
+{
+    //reset all the fields
+    capdu = "";
+    clains = "";
+    p1p2 = 0;
+    lc = 0;
+    data = "";
+}
+
+void apdu::getCAPDU(String *instruction, int *param, int *lenc, String *cdata )
+{
+   *instruction = clains;
+   *param = p1p2;
+   *lenc = lc;
+   *cdata = data;
+
+    reset();
+}
+
+bool apdu::checkPinAvailable(int pin)
+{
+    return (( bitRead(input_pins,pin) == 0) && (bitRead(output_pins,pin) == 0));
+}
+
+bool apdu::checkPinStatus(bool in, int pin)
+{
+
+    return in ? ( bitRead(input_pins,pin) == 1) : (bitRead(output_pins,pin) == 1);
+}
+
+void apdu::resetPinStatus()
+{
+    for (int i = 0; i<NUMBER_OF_PINS;i++)
+    {
+        if(bitRead(output_pins,i)==1)
+        {
+            digitalWrite(i,0);
+        }
+    }
+    input_pins = 0;
+    output_pins = 0;
 }
