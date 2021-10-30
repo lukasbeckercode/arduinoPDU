@@ -56,6 +56,11 @@ data |var |any data the board might need for processing the command |
   - sets the pin specified in p1p2 to _HIGH_
   - requires the pinMode to be set to _OUTPUT_ (see below: 0311)
   - example: 030113 -> set output pin 13 to _HIGH_ , returns "9000" upon success
+- 0302: Read from digital pin
+  - reads input of digital pin p1p2
+  - requires the pinMode to be set to _INPUT_ (see below: 0311)
+  - returns 0 for _LOW_ and 1 for _HIGH_ 
+  - example: 030212 -> returns 09000 if pin 12 reads _LOW_ 
 - 0310: set pinMode to _INPUT_
   - sets the pinMode of p1p2 to _INPUT_, meaning that you can read the pin's value
   - necessary for 0302 command
