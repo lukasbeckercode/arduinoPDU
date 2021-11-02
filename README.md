@@ -1,7 +1,7 @@
 # arduinoPDU
 A simple communication protocol for communication between any device (e.g. PC) and an Arduino via Serial communication loosly based 
 on the APDU protocol used in smart cards. 
-##Features 
+## Features 
 ### Storing and reading data 
 The library provides a String array called records. You can store and read data here either using the according 
 commands, or do it directly in your arduino sketch! 
