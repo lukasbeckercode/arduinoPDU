@@ -23,15 +23,17 @@ public:
      */
     void begin();
     void begin(int);
-    bool validateCAPDU();
-    void writeMSG();
     bool listen();
-    void reset();
     void getCAPDU(String*, int*, int*, String*);
+
+private:
     void runCommand();
     bool checkPinAvailable(int);
     bool checkPinStatus(bool,int);
     void resetPinStatus();
     void resetPinStatus(int);
+    bool validateCAPDU();
+    void writeMSG();
+    void reset();
 };
 #endif //APDU_LIBRARY_H
