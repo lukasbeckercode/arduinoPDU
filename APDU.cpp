@@ -41,7 +41,7 @@ void APDU::begin(int baud_rate){
  */
 void APDU::writeMSG()
 {
-    Serial.println("Hello");
+    Serial.write("Hello");
 }
 
 /**
@@ -53,7 +53,7 @@ bool APDU::validateCAPDU()
     if(capdu.length() % 2 !=0 || capdu.length() < 4) //apdus must have even length
     {
         reset();
-        Serial.println("6700");
+        Serial.write("6700");
         return false;
     }
 
@@ -101,7 +101,7 @@ bool APDU::validateCAPDU()
         if(clains.length() != 4)
         {
             reset();
-            Serial.println("6700");
+            Serial.write("6700");
             return false;
         }
             return true;
@@ -121,30 +121,33 @@ void APDU::runCommand()
     if(clains.length() != 4)
     {
         reset();
-        Serial.println("6700");
+        Serial.write("6700");
     }
 
 
     if(clains =="0100") //prints hello world
     {
-        Serial.print("Hello World!");
-        Serial.println("9000");
+        Serial.write("Hello World!");
+        Serial.write("9000");
     }
     else if ( clains =="0101") //echos the data
     {
-        Serial.print(data);
-        Serial.println("9000");
+       // Serial.write(data);
+        Serial.write("9000");
     }
     else if (clains == "0200") //stores the data in the record p1p2 (max 50)
     {
         records[p1p2] = data;
-        Serial.println("9000");
+        Serial.write("9000");
     }
     else if (clains == "0201") //reads record from p1p2 (max 50)
     {
         String print_data = records[p1p2];
-        Serial.print(print_data);
-        Serial.println("9000");
+        int len = print_data.length();
+        char pdArr[len+1];
+        strcpy(pdArr,print_data.c_str());
+        Serial.write(pdArr,len);
+        Serial.write("9000");
     }
     else if (clains == "0300") //set pin p1p2 to LOW
     {
@@ -152,11 +155,11 @@ void APDU::runCommand()
         if(checkPinStatus(false,p1p2))
         {
             digitalWrite(p1p2, 0);
-            Serial.println("9000");
+            Serial.write("9000");
         }
         else
         {
-            Serial.println("6986");
+            Serial.write("6986");
         }
     }
     else if (clains == "0301") //set p1p2 to HIGH
@@ -165,24 +168,23 @@ void APDU::runCommand()
         if(checkPinStatus(false,p1p2))
         {
             digitalWrite(p1p2, 1);
-            Serial.println("9000");
+            Serial.write("9000");
         }
         else
         {
-            Serial.println("6986"); //pin not available
+            Serial.write("6986"); //pin not available
         }
     }
     else if (clains == "0302") //digitalRead
     {
         if(checkPinStatus(true,p1p2))
         {
-            int in = digitalRead(p1p2);
-            Serial.print(in);
-            Serial.println("9000");
+            Serial.write(digitalRead(p1p2));
+            Serial.write("9000");
         }
         else
         {
-            Serial.println("6986"); //pin not available
+            Serial.write("6986"); //pin not available
         }
     }
     else if (clains =="0310") //set p1p2 to input
@@ -193,11 +195,11 @@ void APDU::runCommand()
         {
             pinMode(p1p2,INPUT);
             input_pins = (input_pins | pin);
-            Serial.println("9000");
+            Serial.write("9000");
         }
         else
         {
-            Serial.println("6985"); //pinMode already set
+            Serial.write("6985"); //pinMode already set
         }
     }
     else if (clains == "0311") //set p1p2 to output
@@ -208,26 +210,26 @@ void APDU::runCommand()
         {
             pinMode(p1p2,OUTPUT);
             output_pins = (output_pins | pin);
-            Serial.println("9000");
+            Serial.write("9000");
         }
         else
         {
-            Serial.println("6985");
+            Serial.write("6985");
         }
     }
     else if (clains=="0399") //turns off all pins, lets the pinMode be reset
     {
         resetPinStatus();
-        Serial.println("9000");
+        Serial.write("9000");
     }
     else if (clains=="0390") //turns off p1p2 and lets it's pinMode be reset
     {
         resetPinStatus(p1p2);
-        Serial.println("9000");
+        Serial.write("9000");
     }
     else
     {
-        Serial.println("6800"); //unknown command
+        Serial.write("6800"); //unknown command
     }
 }
 /**
