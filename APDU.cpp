@@ -189,7 +189,7 @@ void APDU::runCommand()
     }
     else if (clains == "0303") //analogWrite
     {
-        if(checkPinStatus(false,p1p2))
+        if(checkPinStatus(false,p1p2)) //TODO: PWM Pin check?
         {
             if(data.length()!=4)
             {
@@ -210,6 +210,21 @@ void APDU::runCommand()
                 Serial.write("9000");
             }
 
+        }
+        else
+        {
+            Serial.write("6986");
+        }
+    }
+    else if(clains == "0304") //TODO: check if pin is analog, find way to annotate analog pin
+    {
+        if(checkPinStatus(true,p1p2)&&(p1p2-65)<100)
+        {
+            int input = analogRead(A0);
+            char inArr[4];
+            itoa(input,inArr,10);
+            Serial.write(inArr,4);
+            Serial.write("9000");
         }
         else
         {

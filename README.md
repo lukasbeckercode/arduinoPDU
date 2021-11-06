@@ -1,5 +1,5 @@
 # arduinoPDU
-A simple communication protocol for communication between any device (e.g. PC) and an Arduino via Serial communication loosly based 
+A simple communication protocol for communication between any device (e.g. PC) and an Arduino via Serial communication loosely based 
 on the APDU protocol used in smart cards. 
 ## Features 
 ### Storing and reading data 
@@ -17,4 +17,6 @@ Although pointers are used to retrieve all the parts of the command, there is no
 understand pointers at all. Just put the "&" signs exactly where they are in the example.ino sketch 
 and everything works. 
 ## Documentation
-An overview of all available commands and status words as well as an overview of the test-results can be found [here](https://lukasbeckercode.github.io/ArduinoPDU/)
+An overview of all available commands and status words as well as an overview of the test-results can be found
+[here](https://lukasbeckercode.github.io/ArduinoPDU/). <br />
+Analog input pins (A0-A5 for Arduino UNO) get annotated with 65XX, 65 being the int value of 'A' in ASCII.
