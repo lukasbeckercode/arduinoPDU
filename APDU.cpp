@@ -187,6 +187,35 @@ void APDU::runCommand()
             Serial.write("6986"); //pin not available
         }
     }
+    else if (clains == "0303") //analogWrite
+    {
+        if(checkPinStatus(false,p1p2))
+        {
+            if(data.length()!=4)
+            {
+                Serial.write("6700");
+            }
+            else
+            {
+                char nums[4];
+                strcpy(nums,data.c_str());
+                int val = 0;
+                for(int i = 0; i<4;i++)
+                {
+                    int add = ceil(((int)nums[i]-48)*pow(10,(3-i)));
+                    val +=   add;
+                }
+
+                analogWrite(9,val);
+                Serial.write("9000");
+            }
+
+        }
+        else
+        {
+            Serial.write("6986");
+        }
+    }
     else if (clains =="0310") //set p1p2 to input
     {
         int pin = 0;
