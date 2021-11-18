@@ -132,7 +132,11 @@ void APDU::runCommand()
     }
     else if ( clains =="0101") //echos the data
     {
-       // Serial.write(data);
+        String print_data = data;
+        int len = print_data.length();
+        char pdArr[len+1];
+        strcpy(pdArr,print_data.c_str());
+        Serial.write(pdArr,len);
         Serial.write("9000");
     }
     else if (clains == "0200") //stores the data in the record p1p2 (max 50)
@@ -216,7 +220,7 @@ void APDU::runCommand()
             Serial.write("6986");
         }
     }
-    else if(clains == "0304") //TODO: check if pin is analog, find way to annotate analog pin
+    else if(clains == "0304")
     {
         if(checkPinStatus(true,p1p2)&&(p1p2-65)<100)
         {
