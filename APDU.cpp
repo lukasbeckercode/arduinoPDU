@@ -222,13 +222,23 @@ void APDU::runCommand()
     }
     else if(clains == "0304")
     {
-        if(checkPinStatus(true,p1p2)&&(p1p2-65)<100)
+        //FIXME: AnalogPin naming
+        if(checkPinStatus(true,p1p2)) //TODO: FAILS
         {
-            int input = analogRead(A0);
-            char inArr[4];
-            itoa(input,inArr,10);
-            Serial.write(inArr,4);
-            Serial.write("9000");
+            if((p1p2-6500)>0)
+            {
+                String analog_pin = "A" + p1p2-6500;
+                int input = analogRead(A0);
+                char inArr[4];
+                itoa(input,inArr,10);
+                Serial.write(inArr,4);
+                Serial.write("9000");
+            }
+            else
+            {
+                Serial.write("6987"); //Not an analog pin
+            }
+
         }
         else
         {
