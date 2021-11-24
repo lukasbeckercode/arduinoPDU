@@ -19,4 +19,4 @@ and everything works.
 ## Documentation
 An overview of all available commands and status words as well as an overview of the test-results can be found
 [here](https://lukasbeckercode.github.io/ArduinoPDU/). <br />
-Analog input pins (A0-A5 for Arduino UNO) get annotated with 65XX, 65 being the int value of 'A' in ASCII.
+Analog input pins (A0-A5 for Arduino UNO) get annotated by continuing to count, so A0 is 14 (for arduino uno, where pin 13 is the last sigital one) 
