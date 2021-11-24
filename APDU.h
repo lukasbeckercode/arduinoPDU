@@ -35,5 +35,7 @@ private:
     bool validateCAPDU();
     void writeMSG();
     void reset();
+    void setPWMPins();
+    bool checkPWMPin(int pin);
 };
 #endif //APDU_LIBRARY_H

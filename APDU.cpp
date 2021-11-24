@@ -14,6 +14,8 @@ String data  = ""; // some data
  */
  int input_pins = 0;
  int output_pins = 0;
+ int pwm_pins = 0;
+
 /**
  * default constructor
  */
@@ -26,6 +28,7 @@ APDU::APDU() {
  */
 void APDU::begin(){
     Serial.begin(9600);
+    setPWMPins();
 }
 
 /**
@@ -34,6 +37,7 @@ void APDU::begin(){
  */
 void APDU::begin(int baud_rate){
     Serial.begin(baud_rate);
+    setPWMPins();
 }
 
 /**
@@ -193,7 +197,7 @@ void APDU::runCommand()
     }
     else if (clains == "0303") //analogWrite
     {
-        if(checkPinStatus(false,p1p2)) //TODO: PWM Pin check?
+        if(checkPinStatus(false,p1p2) && checkPWMPin(p1p2))
         {
             if(data.length()!=4)
             {
@@ -222,13 +226,11 @@ void APDU::runCommand()
     }
     else if(clains == "0304")
     {
-        //FIXME: AnalogPin naming
-        if(checkPinStatus(true,p1p2)) //TODO: FAILS
+        if(checkPinStatus(true,p1p2))
         {
-            if((p1p2-6500)>0)
+            if((p1p2)>13)
             {
-                String analog_pin = "A" + p1p2-6500;
-                int input = analogRead(A0);
+                int input = analogRead(p1p2);
                 char inArr[4];
                 itoa(input,inArr,10);
                 Serial.write(inArr,4);
@@ -359,7 +361,6 @@ bool APDU::checkPinAvailable(int pin)
  */
 bool APDU::checkPinStatus(bool in, int pin)
 {
-
     return in ? ( bitRead(input_pins,pin) == 1) : (bitRead(output_pins,pin) == 1);
 }
 
@@ -394,4 +395,19 @@ void APDU::resetPinStatus(int pin)
         digitalWrite(pin,0); //make sure the pin is turned off
         bitWrite(input_pins,pin,0);
     }
+}
+
+void APDU::setPWMPins()
+{
+    bitWrite(pwm_pins,3,1);
+    bitWrite(pwm_pins,5,1);
+    bitWrite(pwm_pins,6,1);
+    bitWrite(pwm_pins,9,1);
+    bitWrite(pwm_pins,10,1);
+    bitWrite(pwm_pins,11,1);
+}
+
+bool APDU::checkPWMPin(int pin)
+{
+    return bitRead(pwm_pins,pin) == 1;
 }
