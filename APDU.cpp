@@ -231,9 +231,23 @@ void APDU::runCommand()
             if((p1p2)>13)
             {
                 int input = analogRead(p1p2);
-                char inArr[4];
-                itoa(input,inArr,10);
-                Serial.write(inArr,4);
+                if(input<1000){ //100-999
+                    char inArr[3];
+                    itoa(input,inArr,10);
+                    Serial.write(inArr,3);
+                } else if (input<100){ //10-99
+                    char inArr[2];
+                    itoa(input,inArr,10);
+                    Serial.write(inArr,2);
+                } else if (input<10) { //0-9
+                    char inArr[1];
+                    itoa(input,inArr,10);
+                    Serial.write(inArr,1);
+                }else{ // >999
+                    char inArr[4];
+                    itoa(input,inArr,10);
+                    Serial.write(inArr,4);
+                }
                 Serial.write("9000");
             }
             else
