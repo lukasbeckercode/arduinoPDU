@@ -140,7 +140,19 @@ void APDU::runCommand()
         int len = print_data.length();
         char pdArr[len+1];
         strcpy(pdArr,print_data.c_str());
-        Serial.write(pdArr,len);
+        Serial.write("9000");
+    }
+    else if (clains == "0102")
+    {
+        String print_data = data;
+        int len = print_data.length();
+        char pdArr[len+1];
+        strcpy(pdArr,print_data.c_str());
+        int delay_time = atoi(pdArr);
+       // Serial.write((int)delay_time);
+        Serial.write("9099");
+
+        delay((int)delay_time);
         Serial.write("9000");
     }
     else if (clains == "0200") //stores the data in the record p1p2 (max 50)
